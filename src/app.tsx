@@ -13,7 +13,6 @@ export default function App() {
       root={props => (
         <SessionProvider>
           <StoreProvider>
-            <a href="/">Index</a>
             <Suspense>{props.children}</Suspense>
           </StoreProvider>
         </SessionProvider>

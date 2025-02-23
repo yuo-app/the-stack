@@ -37,51 +37,79 @@ export default function Home() {
   }
 
   return (
-    <main class="w-full p-4 space-y-4">
-      <Show when={auth.status() === 'unauthenticated'}>
-        <button
-          class="p-2 bg-gray-800 text-white rounded"
-          onClick={() => auth.signIn('github')}
-        >
-          Login with GitHub
-        </button>
-      </Show>
-      <Show when={auth.status() === 'authenticated'}>
-        <div class="space-y-2">
-          <h2 class="font-bold text-3xl">
-            Hello, {auth.session()?.user?.name}!
-          </h2>
-          <button
-            class="p-2 bg-red-500 text-white rounded"
-            onClick={() => auth.signOut()}
+    <main class="min-h-screen bg-gray-900 text-gray-100 p-6">
+      <div class="max-w-4xl mx-auto space-y-6">
+        {/* Auth Section */}
+        <Show when={auth.status() === 'unauthenticated'}>
+          <div class="flex justify-end">
+            <button
+              class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors duration-200 border border-gray-700 hover:border-gray-600 text-sm font-medium"
+              onClick={() => auth.signIn('github')}
+            >
+              Sign in with GitHub
+            </button>
+          </div>
+        </Show>
+
+        <Show when={auth.status() === 'authenticated'}>
+          <div class="flex items-center justify-between bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <h2 class="text-2xl font-semibold tracking-tight">
+              Welcome, {auth.session()?.user?.name}
+            </h2>
+            <button
+              class="px-4 py-2 bg-red-900/50 hover:bg-red-900/70 rounded-lg transition-colors duration-200 text-sm font-medium"
+              onClick={() => auth.signOut()}
+            >
+              Sign Out
+            </button>
+          </div>
+        </Show>
+
+        {/* Posts Section */}
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium text-gray-300">Your Posts</h3>
+            <button
+              class="px-4 py-2 bg-blue-900/50 hover:bg-blue-900/70 rounded-lg transition-colors duration-200 text-sm font-medium"
+              onClick={addPost}
+            >
+              + New Post
+            </button>
+          </div>
+
+          <Show
+            when={posts.length > 0}
+            fallback={
+              <div class="bg-gray-800 rounded-lg p-6 text-center border border-gray-700">
+                <p class="text-gray-400">No posts yet. Create your first one!</p>
+              </div>
+            }
           >
-            Logout
-          </button>
+            <ul class="space-y-3">
+              <For each={posts}>
+                {post => (
+                  <li class="bg-gray-800 rounded-lg p-4 flex justify-between items-start border border-gray-700 hover:border-gray-600 transition-colors duration-200">
+                    <div class="space-y-1">
+                      <h4 class="text-lg font-medium text-gray-100">{post.title}</h4>
+                      <p class="text-gray-400 text-sm">{post.content}</p>
+                      <p class="text-xs text-gray-500">
+                        {new Date(post.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <button
+                      class="p-2 hover:bg-red-900/50 rounded-lg transition-colors duration-200"
+                      onClick={() => removePost(post.id)}
+                    >
+                      <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </li>
+                )}
+              </For>
+            </ul>
+          </Show>
         </div>
-      </Show>
-      <div>
-        <button
-          class="p-2 bg-blue-500 text-white rounded"
-          onClick={addPost}
-        >
-          Add Post
-        </button>
-        <ul class="space-y-2 decoration-none">
-          <For each={posts}>
-            {post => (
-              <li class="p-2 bg-gray-100 rounded">
-                <h3 class="font-bold text-xl">{post.title}</h3>
-                <p>{post.content}</p>
-                <button
-                  class="p-2 bg-red-500 text-white rounded"
-                  onClick={() => removePost(post.id)}
-                >
-                  X
-                </button>
-              </li>
-            )}
-          </For>
-        </ul>
       </div>
     </main>
   )
