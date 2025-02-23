@@ -37,71 +37,72 @@ export default function Home() {
   }
 
   return (
-    <main class="min-h-screen bg-gray-900 text-gray-100 p-6">
-      <div class="max-w-4xl mx-auto space-y-6">
+    <main class="min-h-screen bg-zinc-900 text-emerald-100 p-6 font-mono relative">
+      <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_1px,#18181b_1px),linear-gradient(90deg,transparent_1px,#18181b_1px)] bg-[size:32px_32px] opacity-20" />
+      <div class="max-w-3xl mx-auto space-y-6 relative">
         {/* Auth Section */}
         <Show when={auth.status() === 'unauthenticated'}>
           <div class="flex justify-end">
             <button
-              class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors duration-200 border border-gray-700 hover:border-gray-600 text-sm font-medium"
+              class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded border border-emerald-900/30 hover:border-emerald-800/50 text-sm font-mono tracking-wider transition-all duration-200"
               onClick={() => auth.signIn('github')}
             >
-              Sign in with GitHub
+              {'>'} Sign in with GitHub
             </button>
           </div>
         </Show>
 
         <Show when={auth.status() === 'authenticated'}>
-          <div class="flex items-center justify-between bg-gray-800 rounded-lg p-4 border border-gray-700">
-            <h2 class="text-2xl font-semibold tracking-tight">
-              Welcome, {auth.session()?.user?.name}
+          <div class="flex items-center justify-between bg-zinc-800/50 backdrop-blur rounded p-4 border border-emerald-900/30">
+            <h2 class="text-xl font-mono tracking-tight">
+            {'>'} {auth.session()?.user?.name}
             </h2>
             <button
-              class="px-4 py-2 bg-red-900/50 hover:bg-red-900/70 rounded-lg transition-colors duration-200 text-sm font-medium"
+              class="px-4 py-2 bg-red-900/20 hover:bg-red-900/40 rounded border border-red-900/30 hover:border-red-800/50 text-sm tracking-wider transition-all duration-200"
               onClick={() => auth.signOut()}
             >
-              Sign Out
+              /logout
             </button>
           </div>
         </Show>
 
         {/* Posts Section */}
         <div class="space-y-4">
-          <div class="flex justify-between items-center">
-            <h3 class="text-lg font-medium text-gray-300">Your Posts</h3>
+          <div class="flex justify-between items-center border-b border-emerald-900/30 pb-2">
+            <h3 class="text-lg font-mono tracking-wide text-emerald-200">{'>'} posts</h3>
             <button
-              class="px-4 py-2 bg-blue-900/50 hover:bg-blue-900/70 rounded-lg transition-colors duration-200 text-sm font-medium"
+              class="px-4 py-2 bg-emerald-900/20 hover:bg-emerald-900/40 rounded border border-emerald-900/30 hover:border-emerald-800/50 text-sm tracking-wider transition-all duration-200"
               onClick={addPost}
             >
-              + New Post
+              + new
             </button>
           </div>
 
           <Show
             when={posts.length > 0}
             fallback={
-              <div class="bg-gray-800 rounded-lg p-6 text-center border border-gray-700">
-                <p class="text-gray-400">No posts yet. Create your first one!</p>
+              <div class="bg-zinc-800/50 backdrop-blur rounded p-6 text-center border border-emerald-900/30">
+                <p class="text-emerald-400/60 font-mono">{'>'} no entries found_</p>
               </div>
             }
           >
             <ul class="space-y-3">
               <For each={posts}>
                 {post => (
-                  <li class="bg-gray-800 rounded-lg p-4 flex justify-between items-start border border-gray-700 hover:border-gray-600 transition-colors duration-200">
-                    <div class="space-y-1">
-                      <h4 class="text-lg font-medium text-gray-100">{post.title}</h4>
-                      <p class="text-gray-400 text-sm">{post.content}</p>
-                      <p class="text-xs text-gray-500">
+                  <li class="bg-zinc-800/50 backdrop-blur rounded p-4 flex justify-between items-start border border-emerald-900/30 hover:border-emerald-800/50 group transition-all duration-200">
+                    <div class="space-y-2">
+                      <h4 class="text-lg font-mono text-emerald-200">{'>'} {post.title}</h4>
+                      <p class="text-emerald-100/70 font-mono text-sm">{post.content}</p>
+                      <p class="text-xs text-emerald-500/50 font-mono">
                         {new Date(post.created_at).toLocaleDateString()}
                       </p>
                     </div>
                     <button
-                      class="p-2 hover:bg-red-900/50 rounded-lg transition-colors duration-200"
+                      class="p-2 opacity-0 group-hover:opacity-100 hover:bg-red-900/30 rounded transition-all duration-200"
                       onClick={() => removePost(post.id)}
                     >
-                      <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      <svg class="w-5 h-5 text-red-300/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                   </li>
