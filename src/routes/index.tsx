@@ -47,7 +47,7 @@ export default function Home() {
               class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded border border-emerald-900/30 hover:border-emerald-800/50 text-sm font-mono tracking-wider transition-all duration-200"
               onClick={() => auth.signIn('github')}
             >
-              {'>'} Sign in with GitHub
+              Sign in with GitHub
             </button>
           </div>
         </Show>
@@ -69,7 +69,7 @@ export default function Home() {
         {/* Posts Section */}
         <div class="space-y-4">
           <div class="flex justify-between items-center border-b border-emerald-900/30 pb-2">
-            <h3 class="text-lg font-mono tracking-wide text-emerald-200">{'>'} posts</h3>
+            <h3 class="text-lg font-mono tracking-wide text-emerald-200">posts</h3>
             <button
               class="px-4 py-2 bg-emerald-900/20 hover:bg-emerald-900/40 rounded border border-emerald-900/30 hover:border-emerald-800/50 text-sm tracking-wider transition-all duration-200"
               onClick={addPost}
@@ -82,7 +82,7 @@ export default function Home() {
             when={posts.length > 0}
             fallback={
               <div class="bg-zinc-800/50 backdrop-blur rounded p-6 text-center border border-emerald-900/30">
-                <p class="text-emerald-400/60 font-mono">{'>'} no entries found_</p>
+                <p class="text-emerald-400/60 font-mono">no entries found_</p>
               </div>
             }
           >
@@ -91,7 +91,7 @@ export default function Home() {
                 {post => (
                   <li class="bg-zinc-800/50 backdrop-blur rounded p-4 flex justify-between items-start border border-emerald-900/30 hover:border-emerald-800/50 group transition-all duration-200">
                     <div class="space-y-2">
-                      <h4 class="text-lg font-mono text-emerald-200">{'>'} {post.title}</h4>
+                      <h4 class="text-lg font-mono text-emerald-200">{post.title}</h4>
                       <p class="text-emerald-100/70 font-mono text-sm">{post.content}</p>
                       <p class="text-xs text-emerald-500/50 font-mono">
                         {new Date(post.created_at).toLocaleDateString()}
