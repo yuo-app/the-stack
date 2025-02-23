@@ -1,17 +1,22 @@
 // @refresh reload
+import { SessionProvider } from '@solid-mediakit/auth/client'
 import { Router } from '@solidjs/router'
 import { FileRoutes } from '@solidjs/start/router'
 import { Suspense } from 'solid-js'
-import './app.css'
+import { StoreProvider } from '~/stores/store'
+import '@unocss/reset/tailwind.css'
+import 'virtual:uno.css'
 
 export default function App() {
   return (
     <Router
       root={props => (
-        <>
-          <a href="/">Index</a>
-          <Suspense>{props.children}</Suspense>
-        </>
+        <SessionProvider>
+          <StoreProvider>
+            <a href="/">Index</a>
+            <Suspense>{props.children}</Suspense>
+          </StoreProvider>
+        </SessionProvider>
       )}
     >
       <FileRoutes />

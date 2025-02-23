@@ -1,0 +1,10 @@
+[
+  {
+    "idx": 0,
+    "when": 1740336628127,
+    "tag": "0000_ordinary_toad_men",
+    "sql": [
+      "CREATE TABLE `posts` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`title` text NOT NULL,\n\t`content` text NOT NULL,\n\t`created_at` integer NOT NULL,\n\t`updated_at` integer NOT NULL\n);"
+    ]
+  }
+]

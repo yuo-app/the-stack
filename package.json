@@ -4,24 +4,36 @@
   "private": true,
   "packageManager": "bun@1.2.2",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "prebuild": "bun ./scripts/compile-migrations.ts",
     "dev": "bun run prebuild && vinxi dev --host",
     "build": "vinxi build",
-    "db:generate": "drizzle-kit generate",
-    "preview": "bun .output/server/index.mjs",
+    "check": "tsc --noEmit --skipLibCheck",
+    "preview": "wrangler pages dev dist",
+    "l:generate": "drizzle-kit generate --config=drizzle.local.config.ts",
+    "l:studio": "drizzle-kit studio --config=drizzle.local.config.ts",
+    "r:generate": "drizzle-kit generate --config=drizzle.remote.config.ts",
+    "r:studio": "drizzle-kit studio --config=drizzle.remote.config.ts",
+    "r:migrate": "drizzle-kit migrate --config=drizzle.remote.config.ts",
     "lint": "eslint . --fix",
     "tauri": "tauri"
   },
   "dependencies": {
+    "@auth/core": "0.35.0",
+    "@auth/solid-start": "^0.15.4",
+    "@libsql/client": "^0.14.0",
+    "@solid-mediakit/auth": "^3.1.2",
     "@solidjs/router": "^0.15.3",
-    "@solidjs/start": "^1.0.11",
-    "drizzle-orm": "^0.39.2",
-    "solid-js": "^1.9.4",
+    "@solidjs/start": "^1.1.1",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.3",
+    "solid-js": "^1.9.5",
     "sqlocal": "^0.13.0",
-    "vinxi": "^0.5.1"
+    "unenv": "^1.10.0",
+    "vinxi": "^0.5.3",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.1.1",
@@ -31,7 +43,9 @@
     "@unocss/eslint-plugin": "^65.4.3",
     "drizzle-kit": "^0.30.4",
     "eslint": "^9.19.0",
-    "eslint-plugin-solid": "^0.14.5"
+    "eslint-plugin-solid": "^0.14.5",
+    "unocss": "65.4.3",
+    "wrangler": "^3.109.2"
   },
   "overrides": {
     "vite": "5.4.10"

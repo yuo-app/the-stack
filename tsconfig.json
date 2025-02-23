@@ -3,13 +3,13 @@
     "target": "ESNext",
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
+    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
-      "~/*": ["./src/*"],
-      "@/*": ["./drizzle/*"]
+      "~/*": ["./src/*"]
     },
-    "types": ["vinxi/types/client", "bun"],
+    "types": ["vite/client", "@solidjs/start/env", "bun"],
     "allowJs": true,
     "strict": true,
     "noEmit": true,

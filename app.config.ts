@@ -1,16 +1,13 @@
 import process from 'node:process'
 import { defineConfig } from '@solidjs/start/config'
+import UnoCSS from 'unocss/vite'
 
 const host = process.env.TAURI_DEV_HOST
 
 export default defineConfig({
-  ssr: false,
-  server: {
-    routeRules: {
-      '/**': { headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Opener-Policy': 'same-origin' } },
-    },
-  },
+  ssr: true,
   vite: {
+    plugins: [UnoCSS()],
     server: {
       port: 3000,
       strictPort: true,
@@ -28,6 +25,13 @@ export default defineConfig({
     },
     optimizeDeps: {
       exclude: ['sqlocal'],
+      include: ['@auth/core'],
+    },
+  },
+  server: {
+    preset: 'cloudflare_pages',
+    routeRules: {
+      '/**': { headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Opener-Policy': 'same-origin' } },
     },
   },
 })

@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const journal = JSON.parse(
-  fs.readFileSync('./drizzle/migrations/meta/_journal.json', 'utf-8'),
+  fs.readFileSync('./drizzle/localMigrations/meta/_journal.json', 'utf-8'),
 )
 
 export interface MigrationMeta {
@@ -20,7 +20,7 @@ for (const entry of journal.entries) {
   console.log(`Parsing migration: ${tag}`)
 
   const migrationFile = fs.readFileSync(
-    path.join('./drizzle/migrations', `${tag}.sql`),
+    path.join('./drizzle/localMigrations', `${tag}.sql`),
     'utf-8',
   )
 
@@ -36,7 +36,7 @@ for (const entry of journal.entries) {
 }
 
 // Create output directory if it doesn't exist
-const outDir = './src/db/migrations'
+const outDir = './src/db/localMigrations'
 if (!fs.existsSync(outDir))
   fs.mkdirSync(outDir, { recursive: true })
 
