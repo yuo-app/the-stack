@@ -14,4 +14,5 @@ export const serverScheme = z.object({
 
 export const clientScheme = z.object({
   MODE: z.enum(['development', 'production', 'test']).default('development'),
+  VITE_DB_FILE: z.string(),
 })

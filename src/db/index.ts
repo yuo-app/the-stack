@@ -39,7 +39,7 @@ async function connect() {
     import('./localMigrations/migrations.json'),
   ])
 
-  const sqlocal = new SQLocalDrizzle('db.sqlite')
+  const sqlocal = new SQLocalDrizzle(clientEnv.VITE_DB_FILE)
   const { driver, batchDriver, sql } = sqlocal
 
   _localDb = drizzle(driver, batchDriver, {

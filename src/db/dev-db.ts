@@ -15,7 +15,7 @@ let _devDb: LibSQLDatabase<typeof schema> | null = null
 
 function getDevDb() {
   if (!_devDb || !_sqlite) {
-    _sqlite = createClient({ url: 'file:drizzle/db.sqlite' })
+    _sqlite = createClient({ url: `file:drizzle/${clientEnv.VITE_DB_FILE}` })
     _devDb = drizzle(_sqlite, { schema })
   }
   return {
@@ -61,7 +61,7 @@ export async function copyDBFile(file: File) {
 
   try {
     const buffer = await file.arrayBuffer()
-    const targetPath = 'drizzle/db.sqlite'
+    const targetPath = `drizzle/${clientEnv.VITE_DB_FILE}`
 
     await mkdir(dirname(targetPath), { recursive: true })
     fs.writeFileSync(targetPath, Buffer.from(buffer))
