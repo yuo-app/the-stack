@@ -5,7 +5,6 @@ import { useAuth } from '@solid-mediakit/auth/client'
 import { createContext, onMount, useContext } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { localDb } from '~/db'
-import { initUser } from '~/functions/auth'
 
 interface StoreState {
   initialized: Promise<void>
@@ -30,13 +29,10 @@ export function StoreProvider(props: ParentProps) {
 
   onMount(async () => {
     const session = auth.session()
-    if (!session) {
+    if (!session)
       setState({ user: undefined })
-    }
-    else {
-      const user = await initUser(session.user)
-      setState({ user })
-    }
+    else if (session.user)
+      setState({ user: session.user })
   })
 
   onMount(async () => {
