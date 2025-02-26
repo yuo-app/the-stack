@@ -8,6 +8,8 @@ export async function initUser(user: AuthUser) {
   if (!user)
     return
 
+  console.log('initUser', user)
+
   const userData = {
     id: user.id,
     name: user.name!,

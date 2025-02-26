@@ -4,8 +4,6 @@ import { clientEnv } from '~/env/client'
 import { copyDBFile, syncDevDb } from './dev-db'
 import * as localSchema from './schema/local'
 
-// let _remoteDb: LibSQLDatabase<typeof remoteSchema> | null = null
-
 interface ClientDb extends SqliteRemoteDatabase {
   connect: () => Promise<SqliteRemoteDatabase>
 }

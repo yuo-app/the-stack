@@ -40,7 +40,6 @@ export default function Home() {
     <main class="min-h-screen bg-zinc-900 text-emerald-100 p-6 font-mono relative">
       <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_1px,#18181b_1px),linear-gradient(90deg,transparent_1px,#18181b_1px)] bg-[size:32px_32px] opacity-20" />
       <div class="max-w-3xl mx-auto space-y-6 relative">
-        {/* Auth Section */}
         <Show when={auth.status() === 'unauthenticated'}>
           <div class="flex justify-end">
             <button
@@ -55,7 +54,7 @@ export default function Home() {
         <Show when={auth.status() === 'authenticated'}>
           <div class="flex items-center justify-between bg-zinc-800/50 backdrop-blur rounded p-4 border border-emerald-900/30">
             <h2 class="text-xl font-mono tracking-tight">
-            {'>'} {auth.session()?.user?.name}
+              {'>'} {auth.session()?.user?.name}
             </h2>
             <button
               class="px-4 py-2 bg-red-900/20 hover:bg-red-900/40 rounded border border-red-900/30 hover:border-red-800/50 text-sm tracking-wider transition-all duration-200"
@@ -66,7 +65,6 @@ export default function Home() {
           </div>
         </Show>
 
-        {/* Posts Section */}
         <div class="space-y-4">
           <div class="flex justify-between items-center border-b border-emerald-900/30 pb-2">
             <h3 class="text-lg font-mono tracking-wide text-emerald-200">posts</h3>
@@ -80,11 +78,11 @@ export default function Home() {
 
           <Show
             when={posts.length > 0}
-            fallback={
+            fallback={(
               <div class="bg-zinc-800/50 backdrop-blur rounded p-6 text-center border border-emerald-900/30">
                 <p class="text-emerald-400/60 font-mono">no entries found_</p>
               </div>
-            }
+            )}
           >
             <ul class="space-y-3">
               <For each={posts}>

@@ -1,8 +1,8 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
-import { uuidBase64url } from '~/utils'
+import { uuidV4Base64url } from '~/utils'
 
 export const Users = sqliteTable('users', {
-  id: text('id').primaryKey().$defaultFn(() => uuidBase64url()),
+  id: text('id').primaryKey().$defaultFn(() => uuidV4Base64url()),
   name: text('name').notNull(),
   email: text('email').notNull(),
   image: text('image').notNull(),
