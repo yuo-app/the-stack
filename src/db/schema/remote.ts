@@ -4,8 +4,7 @@ import { uuidV4Base64url } from '~/utils'
 export const Users = sqliteTable('users', {
   id: text('id').primaryKey().$defaultFn(() => uuidV4Base64url()),
   name: text('name').notNull(),
-  // TODO: account merging is done via id, what about email should it be unique?
-  email: text('email').notNull(),
+  email: text('email').notNull().unique(),
   image: text('image').notNull(),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updated_at: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
