@@ -35,7 +35,6 @@ export default defineConfig({
     envPrefix: ['VITE_', 'TAURI_'],
   },
   server: {
-    compatibilityDate: '2025-07-08',
     preset: isTauri ? 'static' : 'cloudflare_module',
     routeRules: {
       '/**': { headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Opener-Policy': 'same-origin' } },
@@ -43,13 +42,7 @@ export default defineConfig({
     cloudflare: isTauri
       ? undefined
       : {
-          deployConfig: true,
           nodeCompat: true,
-          wrangler: {
-            observability: {
-              enabled: true,
-            },
-          },
         },
   },
 })

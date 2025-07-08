@@ -11,8 +11,7 @@
     "dev": "bun run prebuild && vinxi dev --host",
     "build": "vinxi build",
     "check": "tsc --noEmit --skipLibCheck",
-    "prepreview": "bun scripts/copy-dev-vars.mjs",
-    "preview": "wrangler dev --cwd .output",
+    "preview": "wrangler dev",
     "l:generate": "drizzle-kit generate --config=drizzle.local.config.ts",
     "l:studio": "drizzle-kit studio --config=drizzle.local.config.ts",
     "r:generate": "drizzle-kit generate --config=drizzle.remote.config.ts",
@@ -32,7 +31,7 @@
     "drizzle-orm": "^0.44.2",
     "solid-js": "^1.9.7",
     "sqlocal": "^0.14.1",
-    "unenv": "^1.10.0",
+    "unenv": "2.0.0-rc.17",
     "vinxi": "^0.5.8",
     "zod": "^3.25.75"
   },
