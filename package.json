@@ -2,7 +2,7 @@
   "name": "sqlite-wasm-drizzle-tauri",
   "type": "module",
   "private": true,
-  "packageManager": "bun@1.2.2",
+  "packageManager": "bun@1.2.19",
   "engines": {
     "node": ">=22"
   },
@@ -21,31 +21,32 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@auth/core": "0.35.0",
-    "@auth/solid-start": "^0.15.4",
-    "@libsql/client": "^0.14.0",
-    "@solid-mediakit/auth": "^3.1.2",
+    "@auth/core": "0.40.0",
+    "@auth/solid-start": "^0.18.0",
+    "@libsql/client": "^0.15.9",
+    "@solid-mediakit/auth": "^3.1.3",
     "@solidjs/router": "^0.15.3",
-    "@solidjs/start": "^1.1.1",
-    "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.39.3",
-    "solid-js": "^1.9.5",
-    "sqlocal": "^0.13.0",
+    "@solidjs/start": "^1.1.6",
+    "dotenv": "^17.1.0",
+    "drizzle-orm": "^0.44.2",
+    "solid-js": "^1.9.7",
+    "sqlocal": "^0.14.1",
     "unenv": "^1.10.0",
-    "vinxi": "^0.5.3",
-    "zod": "^3.24.2"
+    "vinxi": "^0.5.8",
+    "zod": "^3.25.75"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.1.1",
-    "@tauri-apps/cli": "^2.2.7",
-    "@types/bun": "^1.2.2",
-    "@types/node": "^22.13.1",
-    "@unocss/eslint-plugin": "^65.4.3",
-    "drizzle-kit": "^0.30.4",
-    "eslint": "^9.19.0",
-    "eslint-plugin-solid": "^0.14.5",
-    "unocss": "65.4.3",
-    "wrangler": "^3.109.2"
+    "@antfu/eslint-config": "4.16.2",
+    "@tauri-apps/cli": "^2.6.2",
+    "@types/bun": "^1.2.18",
+    "@types/node": "^24.0.10",
+    "@unocss/eslint-plugin": "66.3.3",
+    "drizzle-kit": "^0.31.4",
+    "eslint": "9.30.1",
+    "eslint-plugin-solid": "0.14.5",
+    "typescript": "5.8.3",
+    "unocss": "66.3.3",
+    "wrangler": "^4.23.0"
   },
   "overrides": {
     "vite": "5.4.10"

@@ -3,9 +3,10 @@ import { defineConfig } from '@solidjs/start/config'
 import UnoCSS from 'unocss/vite'
 
 const host = process.env.TAURI_DEV_HOST
+const isTauri = !!process.env.TAURI_ENV_PLATFORM
 
 export default defineConfig({
-  ssr: true,
+  ssr: false,
   vite: {
     plugins: [UnoCSS()],
     server: {
@@ -27,11 +28,17 @@ export default defineConfig({
       exclude: ['sqlocal'],
       include: ['@auth/core'],
     },
+    envPrefix: ['VITE_', 'TAURI_'],
   },
   server: {
-    preset: 'cloudflare_pages',
+    preset: isTauri ? 'static' : 'cloudflare_module',
     routeRules: {
       '/**': { headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Opener-Policy': 'same-origin' } },
     },
+    cloudflare: isTauri
+      ? undefined
+      : {
+          deployConfig: true,
+        },
   },
 })
