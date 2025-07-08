@@ -2,7 +2,7 @@
   "name": "sqlite-wasm-drizzle-tauri",
   "type": "module",
   "private": true,
-  "packageManager": "bun@1.2.19",
+  "packageManager": "bun@1.2.18",
   "engines": {
     "node": ">=22"
   },
