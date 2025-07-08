@@ -8,6 +8,9 @@ const isTauri = !!process.env.TAURI_ENV_PLATFORM
 export default defineConfig({
   ssr: false,
   vite: {
+    worker: {
+      format: 'es',
+    },
     plugins: [UnoCSS()],
     server: {
       port: 3000,
@@ -31,6 +34,7 @@ export default defineConfig({
     envPrefix: ['VITE_', 'TAURI_'],
   },
   server: {
+    compatibilityDate: '2025-07-08',
     preset: isTauri ? 'static' : 'cloudflare_module',
     routeRules: {
       '/**': { headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Opener-Policy': 'same-origin' } },
