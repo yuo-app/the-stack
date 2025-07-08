@@ -13,6 +13,7 @@ export default defineConfig({
     },
     plugins: [UnoCSS()],
     server: {
+      minify: false,
       port: 3000,
       strictPort: true,
       host: host || false,
@@ -44,6 +45,11 @@ export default defineConfig({
       : {
           deployConfig: true,
           nodeCompat: true,
+          wrangler: {
+            observability: {
+              enabled: true,
+            },
+          },
         },
   },
 })
