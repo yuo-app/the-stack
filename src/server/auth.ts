@@ -44,6 +44,17 @@ export const authOptions: SolidAuthConfig = {
   basePath: '/api/auth',
   trustHost: true,
   secret: serverEnv.AUTH_SECRET,
+  cookies: {
+    sessionToken: {
+      name: 'the-stack.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+        path: '/',
+      },
+    },
+  },
   session: {
     strategy: 'jwt',
   },

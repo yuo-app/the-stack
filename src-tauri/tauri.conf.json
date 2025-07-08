@@ -1,8 +1,9 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "sqlite-wasm-drizzle-tauri",
+  "productName": "the-stack",
   "version": "0.1.0",
-  "identifier": "com.wasmtest.dev",
+  "identifier": "com.stack.dev",
+  
   "build": {
     "frontendDist": "../.output/public",
     "devUrl": "http://localhost:3000",
@@ -12,15 +13,16 @@
   "app": {
     "windows": [
       {
-        "title": "sqlite-wasm-drizzle-tauri",
+        "title": "the-stack",
         "width": 800,
         "height": 600,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "useHttpsScheme": true
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self' blob: data:; script-src 'self'; worker-src 'self' blob:; object-src 'none'; connect-src 'self' ipc.localhost https://the-stack.hegyi-aron101.workers.dev"
     }
   },
   "bundle": {
@@ -33,5 +35,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "deep-link": {
+      "customProtocol": "the-stack",
+      "schemes": [
+        "the-stack"
+      ]
+    }
   }
 }

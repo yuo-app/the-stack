@@ -18,6 +18,7 @@
     "r:studio": "drizzle-kit studio --config=drizzle.remote.config.ts",
     "r:migrate": "drizzle-kit migrate --config=drizzle.remote.config.ts",
     "lint": "eslint . --fix",
+    "tauri:build": "tauri build --debug",
     "tauri": "tauri"
   },
   "dependencies": {
@@ -27,6 +28,9 @@
     "@solid-mediakit/auth": "^3.1.3",
     "@solidjs/router": "^0.15.3",
     "@solidjs/start": "^1.1.6",
+    "@tauri-apps/api": "^2.6.0",
+    "@tauri-apps/plugin-deep-link": "^2.4.0",
+    "@tauri-apps/plugin-shell": "^2.3.0",
     "dotenv": "^17.1.0",
     "drizzle-orm": "^0.44.2",
     "solid-js": "^1.9.7",

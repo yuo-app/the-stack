@@ -1,5 +1,6 @@
 import type { Post } from '~/db/schema/local'
 import { useAuth } from '@solid-mediakit/auth/client'
+import { open } from '@tauri-apps/plugin-shell'
 import { eq } from 'drizzle-orm'
 import { For, onMount, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
@@ -36,6 +37,12 @@ export default function Home() {
     setPosts(posts.filter(post => post.id !== id))
   }
 
+  async function signInWithGithub() {
+    const { url } = await auth.signIn('github', { redirect: false, callbackUrl: '/' })
+    if (url)
+      await open(url)
+  }
+
   return (
     <main class="min-h-screen bg-zinc-900 text-emerald-100 p-6 font-mono relative">
       <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_1px,#18181b_1px),linear-gradient(90deg,transparent_1px,#18181b_1px)] bg-[size:32px_32px] opacity-20" />
@@ -44,7 +51,7 @@ export default function Home() {
           <div class="flex justify-end">
             <button
               class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded border border-emerald-900/30 hover:border-emerald-800/50 text-sm font-mono tracking-wider transition-all duration-200"
-              onClick={() => auth.signIn('github')}
+              onClick={signInWithGithub}
             >
               Sign in with GitHub
             </button>
