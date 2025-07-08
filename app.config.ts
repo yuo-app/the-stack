@@ -43,6 +43,11 @@ export default defineConfig({
       ? undefined
       : {
           deployConfig: true,
+          wrangler: {
+            observability: {
+              enabled: true,
+            },
+          },
         },
   },
 })
