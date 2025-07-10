@@ -22,7 +22,11 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' blob: data:; script-src 'self'; worker-src 'self' blob:; object-src 'none'; connect-src 'self' ipc.localhost https://the-stack.hegyi-aron101.workers.dev"
+      "headers": {
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Embedder-Policy": "require-corp"
+      },
+      "csp": "default-src 'self' blob: data:; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; object-src 'none'; connect-src 'self' ipc.localhost https://the-stack.hegyi-aron101.workers.dev"
     }
   },
   "bundle": {

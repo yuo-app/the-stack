@@ -5,6 +5,7 @@ export const Users = sqliteTable('users', {
   id: text('id').primaryKey().$defaultFn(() => uuidV4Base64url()),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
+  emailVerified: integer('email_verified', { mode: 'timestamp' }),
   image: text('image').notNull(),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updated_at: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
@@ -17,8 +18,16 @@ export const Accounts = sqliteTable('accounts', {
   userId: text('userId')
     .notNull()
     .references(() => Users.id, { onDelete: 'cascade' }),
+  type: text('type').notNull(),
   provider: text('provider').notNull(),
   providerAccountId: text('providerAccountId').notNull(),
+  refresh_token: text('refresh_token'),
+  access_token: text('access_token'),
+  expires_at: integer('expires_at'),
+  token_type: text('token_type'),
+  scope: text('scope'),
+  id_token: text('id_token'),
+  session_state: text('session_state'),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 }, account => [
   primaryKey({

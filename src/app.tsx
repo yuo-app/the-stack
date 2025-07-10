@@ -11,10 +11,17 @@ import 'virtual:uno.css'
 
 export default function App() {
   onMount(() => {
-    const unlisten = listen<string>('deep-link://url', (event) => {
+    const unlisten = listen<string>('deep-link://url', async (event) => {
       const url = new URL(event.payload)
       const callbackUrl = new URL(`${clientEnv.VITE_API_URL}${url.pathname}${url.search}`)
-      window.location.href = callbackUrl.href
+
+      try {
+        await fetch(callbackUrl.href, { credentials: 'include' })
+        window.location.reload()
+      }
+      catch (error) {
+        console.error('Failed to process auth callback:', error)
+      }
     })
 
     return () => {
