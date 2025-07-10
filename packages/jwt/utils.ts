@@ -32,8 +32,17 @@ export async function deriveKeysFromSecret(secret: string): Promise<{ privateKey
       true,
       ['sign'],
     )
-    const publicKey = await crypto.subtle.exportKey('spki', privateKey).then(
-      spki => crypto.subtle.importKey('spki', spki, { name: 'ECDSA', namedCurve: 'P-256' }, true, ['verify']),
+
+    const jwk = await crypto.subtle.exportKey('jwk', privateKey)
+    delete jwk.d
+    jwk.key_ops = ['verify']
+
+    const publicKey = await crypto.subtle.importKey(
+      'jwk',
+      jwk,
+      { name: 'ECDSA', namedCurve: 'P-256' },
+      true,
+      ['verify'],
     )
     return { privateKey, publicKey }
   }

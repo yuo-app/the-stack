@@ -207,7 +207,7 @@ Notes:
 * [x] **[drizzle-sqlite-adapter]** Implement SQLite Drizzle adapter with helpers & migration script.
 * [ ] **[drizzle-mysql-adapter]** Implement MySQL Drizzle adapter.
 * [ ] **[drizzle-pg-adapter]** Implement Postgres Drizzle adapter.
-* [ ] **[jwt-module]** JWT module with ES256 default, HS256 fallback, and tests.
+* [x] **[jwt-module]** JWT module with ES256 default, HS256 fallback, and tests.
 * [ ] **[github-oauth]** Integrate GitHub OAuth provider via Arctic including PKCE and CSRF `state`.
 * [ ] **[bun-runtime]** Bun runtime helper (`serveAuthRoutes`).
 * [ ] **[solid-client]** SolidJS client package with reactive session store.
