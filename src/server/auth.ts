@@ -21,6 +21,7 @@ export const authOptions = {
   jwt: {
     secret: serverEnv.AUTH_SECRET,
   },
+  trustHosts: 'all',
 } satisfies CreateAuthOptions
 
 export const auth = cloudflareAuth(authOptions)
