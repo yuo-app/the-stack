@@ -170,6 +170,7 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
   const sessionToken = await auth.createSession(user.id)
 
   cookies.set(SESSION_COOKIE_NAME, sessionToken, { maxAge: auth.jwt.ttl })
+  console.log('Callback: Set session cookie', SESSION_COOKIE_NAME)
   cookies.delete(CSRF_COOKIE_NAME)
   cookies.delete(PKCE_COOKIE_NAME)
 
@@ -182,8 +183,11 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
 }
 
 async function handleSession(request: RequestLike, auth: Auth): Promise<ResponseLike> {
-  const requestCookies = parseCookies(request.headers.get('Cookie'))
+  const rawCookieHeader = request.headers.get('Cookie')
+  console.log('Session: raw Cookie header:', rawCookieHeader)
+  const requestCookies = parseCookies(rawCookieHeader)
   const sessionToken = requestCookies.get(SESSION_COOKIE_NAME)
+  console.log('Session: parsed token', sessionToken)
 
   if (!sessionToken)
     return json({ user: null, session: null }, { status: 401 })
