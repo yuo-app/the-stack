@@ -218,40 +218,77 @@ export function createHandler(options: CreateAuthOptions) {
   const auth = createAuth(options)
   const { providerMap, basePath } = auth
 
+  function applyCors(request: RequestLike, response: Response): Response {
+    const origin = request.headers.get('Origin') || request.headers.get('origin')
+    if (!origin)
+      return response
+    response.headers.set('Access-Control-Allow-Origin', origin)
+    response.headers.set('Vary', 'Origin')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    return response
+  }
+
   return async function (request: RequestLike): Promise<ResponseLike> {
+    // Handle preflight requests early
+    if (request.method === 'OPTIONS') {
+      const origin = request.headers.get('Origin') || request.headers.get('origin') || '*'
+      const res = new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': origin,
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        },
+      })
+      return res
+    }
+
     const url = new URL(request.url)
     if (!url.pathname.startsWith(basePath))
-      return json({ error: 'Not Found' }, { status: 404 })
+      return applyCors(request, json({ error: 'Not Found' }, { status: 404 }))
 
     if (request.method === 'POST' && !verifyRequestOrigin(request, auth.trustHosts))
-      return json({ error: 'Forbidden' }, { status: 403 })
+      return applyCors(request, json({ error: 'Forbidden' }, { status: 403 }))
 
     const path = url.pathname.substring(basePath.length)
     const parts = path.split('/').filter(Boolean)
     const action = parts[0]
 
     if (!action)
-      return json({ error: 'Not Found' }, { status: 404 })
+      return applyCors(request, json({ error: 'Not Found' }, { status: 404 }))
+
+    let response: ResponseLike
 
     if (request.method === 'GET') {
       if (providerMap.has(action)) {
         if (parts.length === 2 && parts[1] === 'callback')
-          return await handleCallback(request, auth, action)
-
-        if (parts.length === 1)
-          return await handleSignIn(request, auth, action)
+          response = await handleCallback(request, auth, action)
+        else if (parts.length === 1)
+          response = await handleSignIn(request, auth, action)
+        else
+          response = json({ error: 'Not Found' }, { status: 404 })
       }
       else if (parts.length === 1 && action === 'session') {
-        return await handleSession(request, auth)
+        response = await handleSession(request, auth)
+      }
+      else {
+        response = json({ error: 'Not Found' }, { status: 404 })
       }
     }
-
-    if (request.method === 'POST') {
+    else if (request.method === 'POST') {
       if (parts.length === 1 && action === 'signout')
-        return await handleSignOut(request, auth)
+        response = await handleSignOut(request, auth)
+      else
+        response = json({ error: 'Not Found' }, { status: 404 })
+    }
+    else {
+      response = json({ error: 'Method Not Allowed' }, { status: 405 })
     }
 
-    return json({ error: 'Not Found' }, { status: 404 })
+    return applyCors(request, response as Response)
   }
 }
 
