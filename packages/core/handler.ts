@@ -25,12 +25,16 @@ async function handleSignIn(request: RequestLike, auth: Auth, providerId: string
   const state = redirectTo ? `${originalState}.${btoa(redirectTo)}` : originalState
   const authUrl = await provider.getAuthorizationUrl(state, codeVerifier)
 
+  console.log('SignIn: Generated originalState:', originalState)
+  console.log('SignIn: Full state for URL:', state)
+
   const requestCookies = parseCookies(request.headers.get('Cookie'))
   const cookies = new Cookies(requestCookies, auth.cookieOptions)
 
   cookies.set(CSRF_COOKIE_NAME, originalState, { maxAge: CSRF_MAX_AGE })
   cookies.set(PKCE_COOKIE_NAME, codeVerifier, { maxAge: CSRF_MAX_AGE })
 
+  console.log('SignIn: Setting CSRF cookie to:', originalState)
   const redirectParam = url.searchParams.get('redirect')
 
   if (redirectParam === 'false') {
@@ -58,6 +62,8 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state')
 
+  console.log('Callback: Received state:', state)
+
   if (!code || !state)
     return json({ error: 'Missing code or state' }, { status: 400 })
 
@@ -69,6 +75,7 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
   if (state.includes('.')) {
     const [originalSavedState, encodedRedirect] = state.split('.')
     savedState = originalSavedState
+    console.log('Callback: Parsed savedState:', savedState)
     try {
       redirectTo = atob(encodedRedirect ?? '') || '/'
     }
@@ -78,11 +85,15 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
   }
   else {
     savedState = state
+    console.log('Callback: savedState (no redirect):', savedState)
   }
 
   const csrfToken = cookies.get(CSRF_COOKIE_NAME)
-  if (!csrfToken || csrfToken !== savedState)
+  console.log('Callback: CSRF token from cookie:', csrfToken)
+  if (!csrfToken || csrfToken !== savedState) {
+    console.log('Callback: CSRF mismatch - savedState:', savedState, 'csrfToken:', csrfToken)
     return json({ error: 'Invalid CSRF token' }, { status: 403 })
+  }
 
   const codeVerifier = cookies.get(PKCE_COOKIE_NAME)
   if (!codeVerifier)
