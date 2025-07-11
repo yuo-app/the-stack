@@ -1,7 +1,9 @@
+import type { SerializeOptions } from 'cookie'
 import type { SignOptions, VerifyOptions } from '../jwt'
 import type { OAuthProvider } from '../oauth'
 import type { Adapter, User } from './index'
 import { sign, verify } from '../jwt'
+import { DEFAULT_COOKIE_SERIALIZE_OPTIONS } from './cookies'
 
 export interface CreateAuthOptions {
   adapter: Adapter
@@ -14,11 +16,14 @@ export interface CreateAuthOptions {
     aud?: string
     ttl?: number
   }
+  cookies?: Partial<SerializeOptions>
 }
 
 export function createAuth(options: CreateAuthOptions) {
-  const { adapter, providers, basePath = '/api/auth', jwt: jwtConfig = {} } = options
+  const { adapter, providers, basePath = '/api/auth', jwt: jwtConfig = {}, cookies: cookieConfig = {} } = options
   const { algorithm = 'ES256', secret, iss, aud, ttl: defaultTTL = 3600 * 24 } = jwtConfig
+
+  const cookieOptions = { ...DEFAULT_COOKIE_SERIALIZE_OPTIONS, ...cookieConfig }
 
   const providerMap = new Map(providers.map(p => [p.id, p]))
 
@@ -68,6 +73,7 @@ export function createAuth(options: CreateAuthOptions) {
     ...adapter,
     providerMap,
     basePath,
+    cookieOptions,
     jwt: {
       ttl: defaultTTL,
     },

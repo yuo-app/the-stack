@@ -13,6 +13,9 @@ export const authOptions = {
       clientSecret: serverEnv.AUTH_GITHUB_SECRET,
     }),
   ],
+  cookies: {
+    secure: serverEnv.NODE_ENV === 'production',
+  },
   jwt: {
     secret: serverEnv.AUTH_SECRET,
   },

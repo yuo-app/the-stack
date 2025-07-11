@@ -7,7 +7,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "packages/*": ["./packages/*"]
     },
     "types": ["vite/client", "@solidjs/start/env", "bun"],
     "allowJs": true,

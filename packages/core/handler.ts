@@ -5,7 +5,6 @@ import {
   Cookies,
   CSRF_COOKIE_NAME,
   CSRF_MAX_AGE,
-  DEFAULT_COOKIE_SERIALIZE_OPTIONS,
   parseCookies,
   PKCE_COOKIE_NAME,
   SESSION_COOKIE_NAME,
@@ -24,10 +23,21 @@ async function handleSignIn(request: RequestLike, auth: Auth, providerId: string
   const authUrl = await provider.getAuthorizationUrl(state, codeVerifier)
 
   const requestCookies = parseCookies(request.headers.get('Cookie'))
-  const cookies = new Cookies(requestCookies, DEFAULT_COOKIE_SERIALIZE_OPTIONS)
+  const cookies = new Cookies(requestCookies, auth.cookieOptions)
 
   cookies.set(CSRF_COOKIE_NAME, state, { maxAge: CSRF_MAX_AGE })
   cookies.set(PKCE_COOKIE_NAME, codeVerifier, { maxAge: CSRF_MAX_AGE })
+
+  const url = new URL(request.url)
+  const redirectParam = url.searchParams.get('redirect')
+
+  if (redirectParam === 'false') {
+    const response = json({ url: authUrl.toString() })
+    cookies.toHeaders().forEach((value, key) => {
+      response.headers.append(key, value)
+    })
+    return response
+  }
 
   const response = redirect(authUrl.toString())
   cookies.toHeaders().forEach((value, key) => {
@@ -50,7 +60,7 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
     return json({ error: 'Missing code or state' }, { status: 400 })
 
   const requestCookies = parseCookies(request.headers.get('Cookie'))
-  const cookies = new Cookies(requestCookies, DEFAULT_COOKIE_SERIALIZE_OPTIONS)
+  const cookies = new Cookies(requestCookies, auth.cookieOptions)
 
   const savedState = cookies.get(CSRF_COOKIE_NAME)
   if (!savedState || savedState !== state)
@@ -173,9 +183,9 @@ async function handleSession(request: RequestLike, auth: Auth): Promise<Response
   }
 }
 
-async function handleSignOut(request: RequestLike, _auth: Auth): Promise<ResponseLike> {
+async function handleSignOut(request: RequestLike, auth: Auth): Promise<ResponseLike> {
   const requestCookies = parseCookies(request.headers.get('Cookie'))
-  const cookies = new Cookies(requestCookies, DEFAULT_COOKIE_SERIALIZE_OPTIONS)
+  const cookies = new Cookies(requestCookies, auth.cookieOptions)
   cookies.delete(SESSION_COOKIE_NAME)
 
   const response = json({ message: 'Signed out' })

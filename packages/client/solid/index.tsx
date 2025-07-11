@@ -34,7 +34,10 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
   )
 
   const signIn = async (provider: string) => {
-    window.location.href = `${props.baseUrl}/${provider}`
+    const res = await fetch(`${props.baseUrl}/${provider}?redirect=false`)
+    const data = await res.json()
+    if (data.url)
+      window.location.href = data.url
   }
 
   const signOut = async () => {

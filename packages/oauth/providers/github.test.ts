@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { GitHub } from './github'
 
 const mockTokens = {
-  accessToken: 'test_access_token',
-  accessTokenExpiresAt: new Date(Date.now() + 3600 * 1000),
-  refreshToken: 'test_refresh_token',
+  accessToken: () => 'test_access_token',
+  accessTokenExpiresAt: () => new Date(Date.now() + 3600 * 1000),
+  refreshToken: () => 'test_refresh_token',
 }
 const mockUser = { id: 123, login: 'test-user', name: 'Test User', email: 'test@example.com', avatar_url: 'https://example.com/avatar.png' }
 
@@ -43,7 +43,7 @@ describe('gitHub Provider', () => {
   it('should validate the callback and return user data', async () => {
     const { user, tokens } = await provider.validateCallback('code', 'code-verifier')
 
-    expect(tokens.accessToken).toBe('test_access_token')
+    expect(tokens.accessToken()).toBe('test_access_token')
     expect(user.id).toBe('123')
     expect(user.name).toBe('Test User')
     expect(user.email).toBe('test@example.com')

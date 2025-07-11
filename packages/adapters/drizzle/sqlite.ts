@@ -8,7 +8,8 @@ type UsersTable = Table & {
   name: AnyColumn
   email: AnyColumn
   image: AnyColumn
-  updated_at: AnyColumn
+  createdAt: AnyColumn
+  updatedAt: AnyColumn
 }
 
 type AccountsTable = Table & {
@@ -81,6 +82,8 @@ export function SQLiteDrizzleAdapter<
             name: data.name ?? null,
             email: data.email ?? null,
             image: data.image ?? null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           } as DBInsertUser)
           .run()
 

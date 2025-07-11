@@ -47,7 +47,7 @@ export async function deriveKeysFromSecret(secret: string): Promise<{ privateKey
     return { privateKey, publicKey }
   }
   catch (error) {
-    throw new AuthError('Invalid AUTH_SECRET. Must be a base64url-encoded PKCS#8 private key for ES256.', error)
+    throw new AuthError('Invalid AUTH_SECRET. Must be a base64url-encoded PKCS#8 private key for ES256. Use `bunx gau secret` to generate one.', error)
   }
 }
 
