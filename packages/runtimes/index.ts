@@ -1,3 +1,3 @@
 export * from './bun'
-export * from './cf'
+export * from './cloudflare'
 export * from './tauri'

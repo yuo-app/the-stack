@@ -17,10 +17,11 @@ export interface CreateAuthOptions {
     ttl?: number
   }
   cookies?: Partial<SerializeOptions>
+  trustHosts?: 'all' | string[]
 }
 
 export function createAuth(options: CreateAuthOptions) {
-  const { adapter, providers, basePath = '/api/auth', jwt: jwtConfig = {}, cookies: cookieConfig = {} } = options
+  const { adapter, providers, basePath = '/api/auth', jwt: jwtConfig = {}, cookies: cookieConfig = {}, trustHosts = options.trustHosts ?? [] } = options
   const { algorithm = 'ES256', secret, iss, aud, ttl: defaultTTL = 3600 * 24 } = jwtConfig
 
   const cookieOptions = { ...DEFAULT_COOKIE_SERIALIZE_OPTIONS, ...cookieConfig }
@@ -81,5 +82,6 @@ export function createAuth(options: CreateAuthOptions) {
     verifyJWT,
     createSession,
     validateSession,
+    trustHosts,
   }
 }

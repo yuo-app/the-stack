@@ -205,6 +205,9 @@ export function createHandler(options: CreateAuthOptions) {
     if (!url.pathname.startsWith(basePath))
       return json({ error: 'Not Found' }, { status: 404 })
 
+    if (request.method === 'POST' && !verifyRequestOrigin(request, auth.trustHosts))
+      return json({ error: 'Forbidden' }, { status: 403 })
+
     const path = url.pathname.substring(basePath.length)
     const parts = path.split('/').filter(Boolean)
     const action = parts[0]
@@ -232,4 +235,30 @@ export function createHandler(options: CreateAuthOptions) {
 
     return json({ error: 'Not Found' }, { status: 404 })
   }
+}
+
+function verifyRequestOrigin(request: RequestLike, trustHosts: 'all' | string[]): boolean {
+  if (trustHosts === 'all')
+    return true
+
+  const origin = request.headers.get('origin')
+  if (!origin)
+    return false
+
+  let originHost: string
+  try {
+    originHost = new URL(origin).host
+  }
+  catch {
+    return false
+  }
+
+  const requestUrl = new URL(request.url)
+  const requestHost = requestUrl.host
+  const requestOrigin = `${requestUrl.protocol}//${requestHost}`
+
+  if (origin === requestOrigin)
+    return true
+
+  return trustHosts.includes(originHost)
 }

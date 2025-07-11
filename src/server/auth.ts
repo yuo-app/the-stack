@@ -1,6 +1,7 @@
+import type { CreateAuthOptions } from 'packages/core'
 import { DrizzleAdapter } from 'packages/adapters/drizzle'
-import { createAuth } from 'packages/core'
 import { GitHub } from 'packages/oauth'
+import { cloudflareAuth } from 'packages/runtimes/cloudflare'
 import { Accounts, Users } from '~/db/schema/remote'
 import { remoteDb } from '~/db/turso'
 import { serverEnv } from '~/env/server'
@@ -19,6 +20,6 @@ export const authOptions = {
   jwt: {
     secret: serverEnv.AUTH_SECRET,
   },
-}
+} satisfies CreateAuthOptions
 
-export const auth = createAuth(authOptions)
+export const auth = cloudflareAuth(authOptions)
