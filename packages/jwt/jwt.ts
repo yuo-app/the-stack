@@ -43,7 +43,7 @@ export async function sign<T extends Record<string, unknown>>(payload: T, option
 
   const now = Math.floor(Date.now() / 1000)
 
-  const jwtPayload: Record<string, unknown> = { ...payload, iat: now, iss, aud, sub }
+  const jwtPayload: Record<string, unknown> = { iat: now, iss, aud, sub, ...payload }
 
   if (ttl != null && ttl > 0)
     jwtPayload.exp = now + ttl

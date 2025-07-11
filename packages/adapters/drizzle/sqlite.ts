@@ -73,40 +73,46 @@ export function SQLiteDrizzleAdapter<
 
     async createUser(data: NewUser) {
       const id = data.id ?? crypto.randomUUID()
-      const inserted: DBUser[] = await db
-        .insert(users)
-        .values({
-          id,
-          name: data.name ?? null,
-          email: data.email ?? null,
-          image: data.image ?? null,
-        } as DBInsertUser)
-        .returning()
-      return toUser(inserted[0]) as User
+      return await db.transaction(async (tx) => {
+        await tx
+          .insert(users)
+          .values({
+            id,
+            name: data.name ?? null,
+            email: data.email ?? null,
+            image: data.image ?? null,
+          } as DBInsertUser)
+          .run()
+
+        const result: DBUser | undefined = await tx.select().from(users).where(eq(users.id, id)).get()
+        return toUser(result) as User
+      })
     },
 
     async linkAccount(data: NewAccount) {
       await db
         .insert(accounts)
         .values({
-          ...data,
           type: 'oauth',
+          ...data,
         } as DBInsertAccount)
         .run()
     },
 
     async updateUser(partial) {
-      const updated: DBUser[] = await db
+      await db
         .update(users)
         .set({
           name: partial.name ?? undefined,
           email: partial.email ?? undefined,
           image: partial.image ?? undefined,
-          updated_at: new Date(),
+          updatedAt: new Date(),
         } as Partial<DBInsertUser>)
         .where(eq(users.id, partial.id))
-        .returning()
-      return toUser(updated[0]) as User
+        .run()
+
+      const result: DBUser | undefined = await db.select().from(users).where(eq(users.id, partial.id)).get()
+      return toUser(result) as User
     },
   }
 }

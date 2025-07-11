@@ -3,7 +3,7 @@ import { MemoryAdapter } from '../adapters/memory/index'
 import { createAuth } from './createAuth'
 
 describe('createAuth with MemoryAdapter', () => {
-  const auth = createAuth({ adapter: MemoryAdapter() })
+  const auth = createAuth({ adapter: MemoryAdapter(), providers: [] })
 
   it('creates and retrieves a user', async () => {
     const user = await auth.createUser({ name: 'Alice', email: 'alice@example.com', image: '' })

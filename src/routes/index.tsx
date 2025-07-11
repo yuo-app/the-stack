@@ -1,7 +1,6 @@
 import type { Post } from '~/db/schema/local'
-import { useAuth } from '@solid-mediakit/auth/client'
-import { open } from '@tauri-apps/plugin-shell'
 import { eq } from 'drizzle-orm'
+import { useAuth } from 'packages/client/solid'
 import { For, onMount, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { localDb } from '~/db'
@@ -9,7 +8,7 @@ import { Posts } from '~/db/schema/local'
 import { useStore } from '~/stores/store'
 
 export default function Home() {
-  const auth = useAuth()
+  const { session, signIn, signOut } = useAuth()
   const [store] = useStore()
   const [posts, setPosts] = createStore<Post[]>([])
 
@@ -38,16 +37,14 @@ export default function Home() {
   }
 
   async function signInWithGithub() {
-    const { url } = await auth.signIn('github', { redirect: false, callbackUrl: '/' })
-    if (url)
-      await open(url)
+    await signIn('github')
   }
 
   return (
     <main class="min-h-screen bg-zinc-900 text-emerald-100 p-6 font-mono relative">
       <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_1px,#18181b_1px),linear-gradient(90deg,transparent_1px,#18181b_1px)] bg-[size:32px_32px] opacity-20" />
       <div class="relative max-w-3xl mx-auto space-y-6">
-        <Show when={auth.status() === 'unauthenticated'}>
+        <Show when={!session()}>
           <div class="flex justify-end">
             <button
               class="font-mono px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded border border-emerald-900/30 hover:border-emerald-800/50 text-sm tracking-wider transition-all duration-200"
@@ -58,14 +55,14 @@ export default function Home() {
           </div>
         </Show>
 
-        <Show when={auth.status() === 'authenticated'}>
+        <Show when={session()}>
           <div class="flex rounded border border-emerald-900/30 items-center justify-between bg-zinc-800/50 backdrop-blur p-4">
             <h2 class="font-mono text-xl tracking-tight">
-              {'>'} {auth.session()?.user?.name}
+              {'>'} {session()?.user?.name}
             </h2>
             <button
               class="px-4 py-2 rounded border text-sm tracking-wider transition-all duration-200 bg-red-900/20 hover:bg-red-900/40 border-red-900/30 hover:border-red-800/50"
-              onClick={() => auth.signOut()}
+              onClick={() => signOut()}
             >
               /logout
             </button>

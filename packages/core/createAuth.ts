@@ -1,10 +1,12 @@
 import type { SignOptions, VerifyOptions } from '../jwt'
-
+import type { OAuthProvider } from '../oauth'
 import type { Adapter, User } from './index'
 import { sign, verify } from '../jwt'
 
 export interface CreateAuthOptions {
   adapter: Adapter
+  providers: OAuthProvider[]
+  basePath?: string
   jwt?: {
     algorithm?: 'ES256' | 'HS256'
     secret?: string // Used for HS256 secret or ES256 private key source (overrides AUTH_SECRET)
@@ -15,8 +17,10 @@ export interface CreateAuthOptions {
 }
 
 export function createAuth(options: CreateAuthOptions) {
-  const { adapter, jwt: jwtConfig = {} } = options
+  const { adapter, providers, basePath = '/api/auth', jwt: jwtConfig = {} } = options
   const { algorithm = 'ES256', secret, iss, aud, ttl: defaultTTL = 3600 * 24 } = jwtConfig
+
+  const providerMap = new Map(providers.map(p => [p.id, p]))
 
   function buildSignOptions(custom: Partial<SignOptions> = {}): SignOptions {
     const base = { ttl: custom.ttl, iss: custom.iss ?? iss, aud: custom.aud ?? aud, sub: custom.sub }
@@ -62,6 +66,11 @@ export function createAuth(options: CreateAuthOptions) {
 
   return {
     ...adapter,
+    providerMap,
+    basePath,
+    jwt: {
+      ttl: defaultTTL,
+    },
     signJWT,
     verifyJWT,
     createSession,

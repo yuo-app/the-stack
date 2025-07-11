@@ -1,4 +1,12 @@
-import { SolidAuth } from '@solid-mediakit/auth'
+import { createHandler } from 'packages/core'
 import { authOptions } from '~/server/auth'
 
-export const { GET, POST } = SolidAuth(authOptions)
+const handler = createHandler(authOptions)
+
+export async function GET(event: any) {
+  return handler(event.request)
+}
+
+export async function POST(event: any) {
+  return handler(event.request)
+}

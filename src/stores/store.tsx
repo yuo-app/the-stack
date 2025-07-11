@@ -1,14 +1,13 @@
-import type { Session } from '@solid-mediakit/auth'
 import type { ParentProps } from 'solid-js'
 import type { SetStoreFunction, Store } from 'solid-js/store'
-import { useAuth } from '@solid-mediakit/auth/client'
+import { useAuth } from 'packages/client/solid'
 import { createContext, onMount, useContext } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { localDb } from '~/db'
 
 interface StoreState {
   initialized: Promise<void>
-  user: Session['user']
+  user: any | undefined
 }
 
 type StoreContextType = [
@@ -19,7 +18,7 @@ type StoreContextType = [
 const StoreContext = createContext<StoreContextType>()
 
 export function StoreProvider(props: ParentProps) {
-  const auth = useAuth()
+  const { session } = useAuth()
   let resolveInitialized: () => void
 
   const [state, setState] = createStore<StoreState>({
@@ -28,11 +27,11 @@ export function StoreProvider(props: ParentProps) {
   })
 
   onMount(async () => {
-    const session = auth.session()
-    if (!session)
+    const s = session()
+    if (!s)
       setState({ user: undefined })
-    else if (session.user)
-      setState({ user: session.user })
+    else if (s.user)
+      setState({ user: s.user })
   })
 
   onMount(async () => {

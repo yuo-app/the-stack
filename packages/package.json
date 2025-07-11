@@ -1,10 +1,13 @@
 {
-  "name": "gau",
+  "name": "@yuo-app/gau",
   "type": "module",
   "version": "0.0.1",
   "packageManager": "bun@1.2.18",
   "description": "go-auth is a delightful auth library",
   "module": "index.ts",
+  "bin": {
+    "gau": "cli/index.ts"
+  },
   "scripts": {
     "dev": "bun run --watch index.ts",
     "build": "bun build index.ts --outdir dist",
@@ -16,7 +19,8 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@oslojs/jwt": "^0.3.0"
+    "@oslojs/jwt": "^0.3.0",
+    "arctic": "^3.7.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.2",

@@ -1,3 +1,4 @@
+import path from 'node:path'
 import process from 'node:process'
 import { defineConfig } from '@solidjs/start/config'
 import UnoCSS from 'unocss/vite'
@@ -8,6 +9,11 @@ const isTauri = !!process.env.TAURI_ENV_PLATFORM
 export default defineConfig({
   ssr: false,
   vite: {
+    resolve: {
+      alias: {
+        packages: path.resolve(process.cwd(), 'packages'),
+      },
+    },
     worker: {
       format: 'es',
     },
@@ -29,7 +35,6 @@ export default defineConfig({
     },
     optimizeDeps: {
       exclude: ['sqlocal'],
-      include: ['@auth/core'],
     },
     envPrefix: ['VITE_', 'TAURI_'],
   },
