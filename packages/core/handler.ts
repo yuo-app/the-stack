@@ -295,27 +295,38 @@ export function createHandler(options: CreateAuthOptions) {
 }
 
 function verifyRequestOrigin(request: RequestLike, trustHosts: 'all' | string[]): boolean {
-  if (trustHosts === 'all')
+  if (trustHosts === 'all') {
+    console.log('VerifyOrigin: trustHosts is "all", allowing')
     return true
+  }
 
   const origin = request.headers.get('origin')
+  console.log('VerifyOrigin: Origin header:', origin)
+
   if (!origin)
     return false
 
   let originHost: string
   try {
     originHost = new URL(origin).host
+    console.log('VerifyOrigin: Parsed originHost:', originHost)
   }
   catch {
+    console.log('VerifyOrigin: Failed to parse origin')
     return false
   }
 
   const requestUrl = new URL(request.url)
   const requestHost = requestUrl.host
   const requestOrigin = `${requestUrl.protocol}//${requestHost}`
+  console.log('VerifyOrigin: requestOrigin:', requestOrigin)
 
-  if (origin === requestOrigin)
+  if (origin === requestOrigin) {
+    console.log('VerifyOrigin: Origin matches requestOrigin, allowing')
     return true
+  }
 
-  return trustHosts.includes(originHost)
+  const allowed = trustHosts.includes(originHost)
+  console.log('VerifyOrigin: Checking if', originHost, 'is in trustHosts', trustHosts, '->', allowed)
+  return allowed
 }
