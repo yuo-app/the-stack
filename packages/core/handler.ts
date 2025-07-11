@@ -206,7 +206,7 @@ async function handleSession(request: RequestLike, auth: Auth): Promise<Response
 async function handleSignOut(request: RequestLike, auth: Auth): Promise<ResponseLike> {
   const requestCookies = parseCookies(request.headers.get('Cookie'))
   const cookies = new Cookies(requestCookies, auth.cookieOptions)
-  cookies.delete(SESSION_COOKIE_NAME)
+  cookies.delete(SESSION_COOKIE_NAME, { sameSite: 'none', secure: true })
 
   const response = json({ message: 'Signed out' })
   cookies.toHeaders().forEach((value, key) => {
