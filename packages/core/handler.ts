@@ -1,4 +1,4 @@
-import type { CreateAuthOptions } from './createAuth'
+import type { createAuth } from './createAuth'
 import type { RequestLike, ResponseLike } from './index'
 import { createOAuthUris } from '../oauth'
 import {
@@ -9,7 +9,6 @@ import {
   PKCE_COOKIE_NAME,
   SESSION_COOKIE_NAME,
 } from './cookies'
-import { createAuth } from './createAuth'
 import { json, redirect } from './index'
 
 type Auth = ReturnType<typeof createAuth>
@@ -216,8 +215,7 @@ async function handleSignOut(request: RequestLike, auth: Auth): Promise<Response
   return response
 }
 
-export function createHandler(options: CreateAuthOptions) {
-  const auth = createAuth(options)
+export function createHandler(auth: Auth) {
   const { providerMap, basePath } = auth
 
   function applyCors(request: RequestLike, response: Response): Response {
