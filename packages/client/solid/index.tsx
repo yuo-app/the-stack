@@ -20,7 +20,7 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
     async () => {
       if (isServer)
         return null
-      const res = await fetch(`${props.baseUrl}/session`)
+      const res = await fetch(`${props.baseUrl}/session`, { credentials: 'include' })
       if (!res.ok)
         return null
 
@@ -34,14 +34,15 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
   )
 
   const signIn = async (provider: string) => {
-    const res = await fetch(`${props.baseUrl}/${provider}?redirect=false`)
+    const redirectTo = encodeURIComponent(window.location.href)
+    const res = await fetch(`${props.baseUrl}/${provider}?redirect=false&redirectTo=${redirectTo}`, { credentials: 'include' })
     const data = await res.json()
     if (data.url)
       window.location.href = data.url
   }
 
   const signOut = async () => {
-    await fetch(`${props.baseUrl}/signout`, { method: 'POST' })
+    await fetch(`${props.baseUrl}/signout`, { method: 'POST', credentials: 'include' })
     refetch()
   }
 

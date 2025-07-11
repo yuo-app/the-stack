@@ -12,6 +12,7 @@ export const authOptions = {
     GitHub({
       clientId: serverEnv.AUTH_GITHUB_ID,
       clientSecret: serverEnv.AUTH_GITHUB_SECRET,
+      redirectUri: `${serverEnv.AUTH_URL}/api/auth/github/callback`,
     }),
   ],
   cookies: {

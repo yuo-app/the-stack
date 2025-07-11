@@ -42,6 +42,14 @@ export default defineConfig({
     preset: isTauri ? 'static' : 'cloudflare_module',
     routeRules: {
       '/**': { headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Opener-Policy': 'same-origin' } },
+      '/api/**': {
+        cors: true,
+          // origin: ['http://127.0.0.1:8787', 'http://localhost:8787', 'http://127.0.0.1:3000', 'http://localhost:3000'],
+          // methods: ['GET', 'POST', 'OPTIONS'],
+          // credentials: true,
+          // allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+          // exposedHeaders: ['Set-Cookie'],
+      },
     },
     cloudflare: isTauri
       ? undefined

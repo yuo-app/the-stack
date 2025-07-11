@@ -19,16 +19,18 @@ async function handleSignIn(request: RequestLike, auth: Auth, providerId: string
   if (!provider)
     return json({ error: 'Provider not found' }, { status: 400 })
 
-  const { state, codeVerifier } = createOAuthUris()
+  const { state: originalState, codeVerifier } = createOAuthUris()
+  const url = new URL(request.url)
+  const redirectTo = url.searchParams.get('redirectTo')
+  const state = redirectTo ? `${originalState}.${btoa(redirectTo)}` : originalState
   const authUrl = await provider.getAuthorizationUrl(state, codeVerifier)
 
   const requestCookies = parseCookies(request.headers.get('Cookie'))
   const cookies = new Cookies(requestCookies, auth.cookieOptions)
 
-  cookies.set(CSRF_COOKIE_NAME, state, { maxAge: CSRF_MAX_AGE })
+  cookies.set(CSRF_COOKIE_NAME, originalState, { maxAge: CSRF_MAX_AGE })
   cookies.set(PKCE_COOKIE_NAME, codeVerifier, { maxAge: CSRF_MAX_AGE })
 
-  const url = new URL(request.url)
   const redirectParam = url.searchParams.get('redirect')
 
   if (redirectParam === 'false') {
@@ -62,8 +64,24 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
   const requestCookies = parseCookies(request.headers.get('Cookie'))
   const cookies = new Cookies(requestCookies, auth.cookieOptions)
 
-  const savedState = cookies.get(CSRF_COOKIE_NAME)
-  if (!savedState || savedState !== state)
+  let savedState: string | undefined
+  let redirectTo = '/'
+  if (state.includes('.')) {
+    const [originalSavedState, encodedRedirect] = state.split('.')
+    savedState = originalSavedState
+    try {
+      redirectTo = atob(encodedRedirect ?? '') || '/'
+    }
+    catch {
+      redirectTo = '/'
+    }
+  }
+  else {
+    savedState = state
+  }
+
+  const csrfToken = cookies.get(CSRF_COOKIE_NAME)
+  if (!csrfToken || csrfToken !== savedState)
     return json({ error: 'Invalid CSRF token' }, { status: 403 })
 
   const codeVerifier = cookies.get(PKCE_COOKIE_NAME)
@@ -154,7 +172,7 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
   cookies.delete(CSRF_COOKIE_NAME)
   cookies.delete(PKCE_COOKIE_NAME)
 
-  const response = redirect('/')
+  const response = redirect(redirectTo)
   cookies.toHeaders().forEach((value, key) => {
     response.headers.append(key, value)
   })
