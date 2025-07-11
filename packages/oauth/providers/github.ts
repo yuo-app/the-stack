@@ -17,7 +17,9 @@ interface GitHubUser {
 async function getUser(accessToken: string): Promise<AuthUser> {
   const response = await fetch(`${GITHUB_API_URL}/user`, {
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      'Authorization': `Bearer ${accessToken}`,
+      'User-Agent': 'gau',
+      'Accept': 'application/vnd.github+json',
     },
   })
   const data: GitHubUser = await response.json()

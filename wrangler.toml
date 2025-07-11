@@ -7,3 +7,6 @@ keep_vars = true
 [assets]
 binding = "ASSETS"
 directory = ".output/public"
+
+[observability]
+enabled = true
