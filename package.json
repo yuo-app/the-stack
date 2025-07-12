@@ -20,7 +20,8 @@
     "r:migrate": "drizzle-kit migrate --config=drizzle.remote.config.ts",
     "r:push": "drizzle-kit push --config=drizzle.remote.config.ts",
     "lint": "eslint . --fix",
-    "tauri:build": "tauri build --debug",
+    "tauri:build": "tauri build",
+    "tauri:register-protocol": "powershell -ExecutionPolicy Bypass -File ./scripts/register-protocol.ps1",
     "tauri": "tauri"
   },
   "dependencies": {

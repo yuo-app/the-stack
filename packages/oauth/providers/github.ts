@@ -34,18 +34,27 @@ async function getUser(accessToken: string): Promise<AuthUser> {
 }
 
 export function GitHub(config: OAuthProviderConfig): OAuthProvider {
-  const client = new OAuth2Client(config.clientId, config.clientSecret, config.redirectUri ?? null)
+  const defaultClient = new OAuth2Client(config.clientId, config.clientSecret, config.redirectUri ?? null)
+
+  function getClient(redirectUri?: string): OAuth2Client {
+    if (!redirectUri || (config.redirectUri && redirectUri === config.redirectUri))
+      return defaultClient
+
+    return new OAuth2Client(config.clientId, config.clientSecret, redirectUri)
+  }
 
   return {
     id: 'github',
 
-    async getAuthorizationUrl(state: string, codeVerifier: string, options?: { scopes?: string[] }) {
+    async getAuthorizationUrl(state: string, codeVerifier: string, options?: { scopes?: string[], redirectUri?: string }) {
+      const client = getClient(options?.redirectUri)
       const scopes = options?.scopes ?? config.scope ?? []
       const url = await client.createAuthorizationURLWithPKCE(GITHUB_AUTH_URL, state, CodeChallengeMethod.S256, codeVerifier, scopes)
       return url
     },
 
-    async validateCallback(code: string, codeVerifier: string) {
+    async validateCallback(code: string, codeVerifier: string, redirectUri?: string) {
+      const client = getClient(redirectUri)
       const tokens = await client.validateAuthorizationCode(GITHUB_TOKEN_URL, code, codeVerifier)
       const user = await getUser(tokens.accessToken())
       return { tokens, user }

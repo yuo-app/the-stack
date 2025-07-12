@@ -8,6 +8,8 @@ import { StoreProvider } from '~/stores/store'
 import '@unocss/reset/tailwind.css'
 import 'virtual:uno.css'
 
+console.log('clientEnv.VITE_API_URL', clientEnv.VITE_API_URL)
+
 export default function App() {
   return (
     <Router

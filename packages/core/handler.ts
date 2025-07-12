@@ -2,6 +2,7 @@ import type { createAuth } from './createAuth'
 import type { RequestLike, ResponseLike } from './index'
 import { createOAuthUris } from '../oauth'
 import {
+  CALLBACK_URI_COOKIE_NAME,
   Cookies,
   CSRF_COOKIE_NAME,
   CSRF_MAX_AGE,
@@ -22,13 +23,18 @@ async function handleSignIn(request: RequestLike, auth: Auth, providerId: string
   const url = new URL(request.url)
   const redirectTo = url.searchParams.get('redirectTo')
   const state = redirectTo ? `${originalState}.${btoa(redirectTo)}` : originalState
-  const authUrl = await provider.getAuthorizationUrl(state, codeVerifier)
+  const callbackUri = url.searchParams.get('callbackUri')
+  const authUrl = await provider.getAuthorizationUrl(state, codeVerifier, {
+    redirectUri: callbackUri ?? undefined,
+  })
 
   const requestCookies = parseCookies(request.headers.get('Cookie'))
   const cookies = new Cookies(requestCookies, auth.cookieOptions)
 
   cookies.set(CSRF_COOKIE_NAME, originalState, { maxAge: CSRF_MAX_AGE, sameSite: 'none' })
   cookies.set(PKCE_COOKIE_NAME, codeVerifier, { maxAge: CSRF_MAX_AGE, sameSite: 'none' })
+  if (callbackUri)
+    cookies.set(CALLBACK_URI_COOKIE_NAME, callbackUri, { maxAge: CSRF_MAX_AGE, sameSite: 'none' })
 
   const redirectParam = url.searchParams.get('redirect')
 
@@ -88,7 +94,9 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
   if (!codeVerifier)
     return json({ error: 'Missing PKCE code verifier' }, { status: 400 })
 
-  const { user: providerUser, tokens } = await provider.validateCallback(code, codeVerifier)
+  const callbackUri = cookies.get(CALLBACK_URI_COOKIE_NAME)
+
+  const { user: providerUser, tokens } = await provider.validateCallback(code, codeVerifier, callbackUri ?? undefined)
 
   const userFromAccount = await auth.getUserByAccount(providerId, providerUser.id)
 
@@ -171,8 +179,17 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
   cookies.set(SESSION_COOKIE_NAME, sessionToken, { maxAge: auth.jwt.ttl, sameSite: 'none', secure: true })
   cookies.delete(CSRF_COOKIE_NAME)
   cookies.delete(PKCE_COOKIE_NAME)
+  if (callbackUri)
+    cookies.delete(CALLBACK_URI_COOKIE_NAME)
 
-  const response = redirect(redirectTo)
+  const redirectParam = url.searchParams.get('redirect')
+
+  let response: Response
+  if (redirectParam === 'false')
+    response = json({ user })
+  else
+    response = redirect(redirectTo)
+
   cookies.toHeaders().forEach((value, key) => {
     response.headers.append(key, value)
   })

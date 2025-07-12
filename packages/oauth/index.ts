@@ -20,6 +20,6 @@ export interface AuthUser {
 
 export interface OAuthProvider {
   id: string
-  getAuthorizationUrl: (state: string, codeVerifier: string, options?: { scopes?: string[] }) => Promise<URL>
-  validateCallback: (code: string, codeVerifier: string) => Promise<{ tokens: OAuth2Tokens, user: AuthUser }>
+  getAuthorizationUrl: (state: string, codeVerifier: string, options?: { scopes?: string[], redirectUri?: string }) => Promise<URL>
+  validateCallback: (code: string, codeVerifier: string, redirectUri?: string) => Promise<{ tokens: OAuth2Tokens, user: AuthUser }>
 }

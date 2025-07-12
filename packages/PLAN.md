@@ -6,6 +6,12 @@
 
 ---
 
+## Status
+
+- works on the web: vite dev, wrangler dev, remote cloudflare workers
+- works even with different hosts eg. from wrangler dev using the remote cloudflare workers
+- currently getting ready to test in tauri dev and tauri build
+
 ## 1  Scope & Philosophy
 
 ### 1.1  Goals
@@ -20,10 +26,10 @@
 
 ### 1.2  Non-Goals
 
-* Password logins (passkeys/WebAuthn will be explored later).
-* Large UI widgets – only headless helpers & demo forms.
-* Support for legacy Node (<18) – rely on native `fetch` & Web Crypto.
-* Storing app secrets in the browser – JWT defaults to **ES256**.
+- Password logins (passkeys/WebAuthn will be explored later).
+- Large UI widgets – only headless helpers & demo forms.
+- Support for legacy Node (<18) – rely on native `fetch` & Web Crypto.
+- Storing app secrets in the browser – JWT defaults to **ES256**.
 
 ---
 
@@ -78,25 +84,25 @@ export const auth = createAuth({
 
 ### 3.1  Core
 
-* Type-safe public API (`createAuth`, `getSession`, `signIn`, `signOut`, …).
-* Router-agnostic `RequestLike` / `ResponseLike` abstraction.
-* Minimal state machine: `signIn()` → providerRedirect → `callback()` → JWT issue → cookie.
+- Type-safe public API (`createAuth`, `getSession`, `signIn`, `signOut`, …).
+- Router-agnostic `RequestLike` / `ResponseLike` abstraction.
+- Minimal state machine: `signIn()` → providerRedirect → `callback()` → JWT issue → cookie.
 
 ### 3.2  OAuth Module
 
-* Builds on **Arctic** provider objects.
-* Normalises profile → `{ id, name, email, avatar }`.
-* PKCE & `state` baked-in; optional `response_mode=json` for desktop flows.
+- Builds on **Arctic** provider objects.
+- Normalises profile → `{ id, name, email, avatar }`.
+- PKCE & `state` baked-in; optional `response_mode=json` for desktop flows.
 
 ### 3.3  JWT Module
 
-* Uses [`@oslojs/jwt`](https://jwt.oslojs.dev/).
-* **ES256** (private-key ECDSA) default, private key read from `AUTH_SECRET`, public key derived.
-* **HS256** fallback for single-server setups (`AUTH_SECRET` used as shared secret).
-* Handles both raw and DER-encoded ECDSA signatures to ensure cross-runtime compatibility (Bun, Node, browsers).
-* Helpers: `sign(payload, { ttl })`, `verify(token)`; public key auto-derived for ES256.
-* Automatic standard claims (`iat`, `exp`, `sub`, `iss`, `aud`).
-* Refresh-token rotation planned (post-MVP).
+- Uses [`@oslojs/jwt`](https://jwt.oslojs.dev/).
+- **ES256** (private-key ECDSA) default, private key read from `AUTH_SECRET`, public key derived.
+- **HS256** fallback for single-server setups (`AUTH_SECRET` used as shared secret).
+- Handles both raw and DER-encoded ECDSA signatures to ensure cross-runtime compatibility (Bun, Node, browsers).
+- Helpers: `sign(payload, { ttl })`, `verify(token)`; public key auto-derived for ES256.
+- Automatic standard claims (`iat`, `exp`, `sub`, `iss`, `aud`).
+- Refresh-token rotation planned (post-MVP).
 
 ### 3.4  Database Adapter Contract
 
@@ -111,21 +117,21 @@ interface Adapter {
 }
 ```
 
-* `SQLiteDrizzleAdapter` (exported as `DrizzleAdapter`) ships first-party; Postgres & MySQL adapters planned.
+- `SQLiteDrizzleAdapter` (exported as `DrizzleAdapter`) ships first-party; Postgres & MySQL adapters planned.
 
-* later: `DrizzleAdapter` will be a generic adapter that can be used with any SQL engine supported by Drizzle.
+- later: `DrizzleAdapter` will be a generic adapter that can be used with any SQL engine supported by Drizzle.
 
 ### 3.5  Runtime Helpers
 
-* **Bun** – thin sugar, zero dependencies.
-* **Cloudflare Workers** – proxy polyfills URL & Headers quirks.
-* **Tauri** – `invokeDeepLink(url)` route helper.
+- **Bun** – thin sugar, zero dependencies.
+- **Cloudflare Workers** – proxy polyfills URL & Headers quirks.
+- **Tauri** – `invokeDeepLink(url)` route helper.
 
 ### 3.6  Client Packages
 
-* Separate ESM clients (`@yuo-app/gau/solid`, `…/svelte`).
-* Expose reactive `session()` store, `signIn`, `signOut`.
-* Each ~1 kB gzipped, no dependencies beyond framework runtime.
+- Separate ESM clients (`@yuo-app/gau/solid`, `…/svelte`).
+- Expose reactive `session()` store, `signIn`, `signOut`.
+- Each ~1 kB gzipped, no dependencies beyond framework runtime.
 
 ---
 
@@ -180,11 +186,11 @@ Notes:
 
 ## 6  Security
 
-* **CSRF**: double-submit cookie + `state` param (generated in OAuth helper).
-* **PKCE** enforced for public clients.
-* **JWT** private key / secret stored as `AUTH_SECRET`; public key derived on the fly for ES256.
-* Default cookie settings: `HttpOnly`, `SameSite=Lax`, `Secure` in production.
-* Optional `frame-ancestors 'none'` & `referrer-policy` header helpers.
+- **CSRF**: double-submit cookie + `state` param (generated in OAuth helper).
+- **PKCE** enforced for public clients.
+- **JWT** private key / secret stored as `AUTH_SECRET`; public key derived on the fly for ES256.
+- Default cookie settings: `HttpOnly`, `SameSite=Lax`, `Secure` in production.
+- Optional `frame-ancestors 'none'` & `referrer-policy` header helpers.
 
 ---
 
@@ -201,24 +207,24 @@ Notes:
 
 ## 8  Development Task List
 
-* [x] **[core-abstractions]** Design core `RequestLike`/`ResponseLike` abstraction and Adapter interface.
-* [x] **[scaffold-monorepo]** Scaffold monorepo package structure (core, oauth, jwt, adapters, runtimes, clients, cli).
-* [x] **[create-auth]** Implement `createAuth()` with in-memory adapter and unit tests.
-* [x] **[drizzle-sqlite-adapter]** Implement SQLite Drizzle adapter with helpers & migration script.
-* [ ] **[drizzle-mysql-adapter]** Implement MySQL Drizzle adapter.
-* [ ] **[drizzle-pg-adapter]** Implement Postgres Drizzle adapter.
-* [x] **[jwt-module]** JWT module with ES256 default, HS256 fallback, and tests.
-* [x] **[github-oauth]** Integrate GitHub OAuth provider via Arctic including PKCE and CSRF `state`.
-* [ ] **[bun-runtime]** Bun runtime helper (`serveAuthRoutes`).
-* [ ] **[solid-client]** SolidJS client package with reactive session store.
-* [ ] **[svelte-client]** Svelte 5 client package with reactive session store.
-* [ ] **[security-hardening]** Security hardening: CSRF double submit, PKCE enforcement, secure cookies.
-* [ ] **[account-linking]** Automatic account linking across providers.
-* [ ] **[solid-tauri-example]** SolidStart + Tauri example demo.
-* [ ] **[cf-runtime]** Cloudflare Workers runtime helper.
-* [ ] **[cli-scaffolder]** CLI scaffolder (`bunx @yuo-app/gau init`) including auth secret key generation.
-* [ ] **[docs-site]** Documentation site (Astro Starlight) & examples gallery.
-* [ ] **[passkeys]** Passkeys/WebAuthn module with authenticators table and helpers.
+- [x] **[core-abstractions]** Design core `RequestLike`/`ResponseLike` abstraction and Adapter interface.
+- [x] **[scaffold-monorepo]** Scaffold monorepo package structure (core, oauth, jwt, adapters, runtimes, clients, cli).
+- [x] **[create-auth]** Implement `createAuth()` with in-memory adapter and unit tests.
+- [x] **[drizzle-sqlite-adapter]** Implement SQLite Drizzle adapter with helpers & migration script.
+- [ ] **[drizzle-mysql-adapter]** Implement MySQL Drizzle adapter.
+- [ ] **[drizzle-pg-adapter]** Implement Postgres Drizzle adapter.
+- [x] **[jwt-module]** JWT module with ES256 default, HS256 fallback, and tests.
+- [x] **[github-oauth]** Integrate GitHub OAuth provider via Arctic including PKCE and CSRF `state`.
+- [ ] **[bun-runtime]** Bun runtime helper (`serveAuthRoutes`).
+- [ ] **[solid-client]** SolidJS client package with reactive session store.
+- [ ] **[svelte-client]** Svelte 5 client package with reactive session store.
+- [ ] **[security-hardening]** Security hardening: CSRF double submit, PKCE enforcement, secure cookies.
+- [ ] **[account-linking]** Automatic account linking across providers.
+- [ ] **[solid-tauri-example]** SolidStart + Tauri example demo.
+- [ ] **[cf-runtime]** Cloudflare Workers runtime helper.
+- [ ] **[cli-scaffolder]** CLI scaffolder (`bunx @yuo-app/gau init`) including auth secret key generation.
+- [ ] **[docs-site]** Documentation site (Astro Starlight) & examples gallery.
+- [ ] **[passkeys]** Passkeys/WebAuthn module with authenticators table and helpers.
 
 ---
 
