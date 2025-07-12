@@ -44,7 +44,7 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
 
       const token = getStoredToken()
       const headers = token ? { Authorization: `Bearer ${token}` } : undefined
-      const res = await fetch(`${props.baseUrl}/session`, { credentials: 'include', headers })
+      const res = await fetch(`${props.baseUrl}/session`, token ? { headers } : { credentials: 'include' })
       if (!res.ok)
         return null
 
@@ -77,7 +77,9 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
   const signOut = async () => {
     clearToken()
     document.cookie = '__gau-session-token=; path=/; max-age=0'
-    await fetch(`${props.baseUrl}/signout`, { method: 'POST', credentials: 'include' })
+    const token = getStoredToken()
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined
+    await fetch(`${props.baseUrl}/signout`, token ? { method: 'POST', headers } : { method: 'POST', credentials: 'include' })
     refetch()
   }
 
