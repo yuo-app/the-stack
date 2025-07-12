@@ -16,12 +16,35 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue>()
 
+function getStoredToken() {
+  if (typeof localStorage === 'undefined')
+    return null
+  return localStorage.getItem('gau-token')
+}
+
+function storeToken(token: string) {
+  try {
+    localStorage.setItem('gau-token', token)
+  }
+  catch {}
+}
+
+function clearToken() {
+  try {
+    localStorage.removeItem('gau-token')
+  }
+  catch {}
+}
+
 export function AuthProvider(props: ParentProps & { baseUrl: string }) {
   const [session, { refetch }] = createResource<Session | null>(
     async () => {
       if (isServer)
         return null
-      const res = await fetch(`${props.baseUrl}/session`, { credentials: 'include' })
+
+      const token = getStoredToken()
+      const headers = token ? { Authorization: `Bearer ${token}` } : undefined
+      const res = await fetch(`${props.baseUrl}/session`, { credentials: 'include', headers })
       if (!res.ok)
         return null
 
@@ -52,6 +75,8 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
   }
 
   const signOut = async () => {
+    clearToken()
+    document.cookie = '__gau-session-token=; path=/; max-age=0'
     await fetch(`${props.baseUrl}/signout`, { method: 'POST', credentials: 'include' })
     refetch()
   }
@@ -72,7 +97,8 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
       // We received a token from the backend redirect. Set it as a cookie and refetch the session.
       // This is a client-side cookie for the app's domain, which is fine.
       document.cookie = `__gau-session-token=${token}; path=/; max-age=31536000; samesite=lax`
-      console.log('[handleDeepLink] Session token received and set in cookie. Refetching session...')
+      storeToken(token)
+      console.log('[handleDeepLink] Session token received and set. Refetching session...')
       await refetch()
       return
     }
