@@ -176,6 +176,15 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
 
   const sessionToken = await auth.createSession(user.id)
 
+  const isTauriRedirect = redirectTo.startsWith('the-stack://')
+
+  // For Tauri, we can't set a cookie on a custom protocol, so we pass the token in the URL.
+  if (isTauriRedirect) {
+    const destination = new URL(redirectTo)
+    destination.searchParams.set('token', sessionToken)
+    return redirect(destination.toString())
+  }
+
   cookies.set(SESSION_COOKIE_NAME, sessionToken, { maxAge: auth.jwt.ttl, sameSite: 'none', secure: true })
   cookies.delete(CSRF_COOKIE_NAME)
   cookies.delete(PKCE_COOKIE_NAME)
@@ -200,7 +209,13 @@ async function handleCallback(request: RequestLike, auth: Auth, providerId: stri
 async function handleSession(request: RequestLike, auth: Auth): Promise<ResponseLike> {
   const rawCookieHeader = request.headers.get('Cookie')
   const requestCookies = parseCookies(rawCookieHeader)
-  const sessionToken = requestCookies.get(SESSION_COOKIE_NAME)
+  let sessionToken = requestCookies.get(SESSION_COOKIE_NAME)
+
+  if (!sessionToken) {
+    const authHeader = request.headers.get('Authorization')
+    if (authHeader?.startsWith('Bearer '))
+      sessionToken = authHeader.substring(7)
+  }
 
   if (!sessionToken)
     return json({ user: null, session: null }, { status: 401 })

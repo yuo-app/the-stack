@@ -37,24 +37,18 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
   const isTauri = !!import.meta.env.TAURI_ENV_PLATFORM
 
   async function signIn(provider: string) {
-    const redirectTo = encodeURIComponent(window.location.href)
-    let fetchUrl = `${props.baseUrl}/${provider}?redirect=false&redirectTo=${redirectTo}`
-    let openFunc = (url: string) => {
-      window.location.href = url
-      return Promise.resolve()
-    }
+    // For Tauri, the final redirect after the backend is done should be our custom protocol.
+    const redirectTo = encodeURIComponent('the-stack://oauth/callback')
+    const authUrl = `${props.baseUrl}/${provider}?redirectTo=${redirectTo}`
 
     if (isTauri) {
-      const callbackUri = 'the-stack://oauth/callback'
-      fetchUrl += `&callbackUri=${encodeURIComponent(callbackUri)}`
       const shell = await import('@tauri-apps/plugin-shell')
-      openFunc = shell.open
+      await shell.open(authUrl)
     }
-
-    const res = await fetch(fetchUrl, { credentials: 'include' })
-    const data = await res.json()
-    if (data.url)
-      await openFunc(data.url)
+    else {
+      // Standard web flow
+      window.location.href = authUrl
+    }
   }
 
   const signOut = async () => {
@@ -72,6 +66,16 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
 
     const code = parsed.searchParams.get('code')
     const state = parsed.searchParams.get('state')
+    const token = parsed.searchParams.get('token')
+
+    if (token) {
+      // We received a token from the backend redirect. Set it as a cookie and refetch the session.
+      // This is a client-side cookie for the app's domain, which is fine.
+      document.cookie = `__gau-session-token=${token}; path=/; max-age=31536000; samesite=lax`
+      console.log('[handleDeepLink] Session token received and set in cookie. Refetching session...')
+      await refetch()
+      return
+    }
 
     console.log(`[handleDeepLink] Extracted code: ${code}, state: ${state}`)
 
