@@ -60,16 +60,14 @@ export function AuthProvider(props: ParentProps & { baseUrl: string }) {
   const isTauri = !!import.meta.env.TAURI_ENV_PLATFORM
 
   async function signIn(provider: string) {
-    // For Tauri, the final redirect after the backend is done should be our custom protocol.
-    const redirectTo = encodeURIComponent('the-stack://oauth/callback')
-    const authUrl = `${props.baseUrl}/${provider}?redirectTo=${redirectTo}`
-
     if (isTauri) {
+      const redirectTo = encodeURIComponent('the-stack://oauth/callback')
+      const authUrl = `${props.baseUrl}/${provider}?redirectTo=${redirectTo}`
       const shell = await import('@tauri-apps/plugin-shell')
       await shell.open(authUrl)
     }
     else {
-      // Standard web flow
+      const authUrl = `${props.baseUrl}/${provider}`
       window.location.href = authUrl
     }
   }

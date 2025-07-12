@@ -10,7 +10,8 @@
 
 - works on the web: vite dev, wrangler dev, remote cloudflare workers
 - works even with different hosts eg. from wrangler dev using the remote cloudflare workers
-- currently getting ready to test in tauri dev and tauri build
+- works with tauri dev and tauri build
+- currently getting ready to test in tauri android dev and tauri android build
 
 ## 1  Scope & Philosophy
 
